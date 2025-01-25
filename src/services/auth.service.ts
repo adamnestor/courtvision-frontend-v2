@@ -52,6 +52,15 @@ export class AuthService {
 
     const authData = await response.json();
     localStorage.setItem("token", authData.token);
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify({
+        firstName: authData.firstName,
+        lastName: authData.lastName,
+        email: authData.email,
+        role: authData.role,
+      })
+    );
     return authData;
   }
 
@@ -68,11 +77,20 @@ export class AuthService {
 
     const authData = await response.json();
     localStorage.setItem("token", authData.token);
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify({
+        firstName: authData.firstName,
+        lastName: authData.lastName,
+        email: authData.email,
+        role: authData.role,
+      })
+    );
     return authData;
   }
 
   static logout(): void {
-    localStorage.removeItem("token");
+    localStorage.clear();
   }
 
   static isAuthenticated(): boolean {

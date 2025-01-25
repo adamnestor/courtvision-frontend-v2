@@ -9,6 +9,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../services/auth.service";
 import { useState, useEffect } from "react";
+import { StatsOverview } from "./dashboard/StatsOverview";
+import { FilterBar, TimeFrame, Category } from "./dashboard/FilterBar";
+import { StatRows } from "./dashboard/StatRows";
 
 interface UserInfo {
   firstName: string;
@@ -34,6 +37,43 @@ export function Dashboard() {
     AuthService.logout();
     navigate("/login");
   };
+
+  const handleTimeFrameChange = (timeFrame: TimeFrame) => {
+    console.log("Time Frame changed:", timeFrame);
+    // Will handle API call/filtering later
+  };
+
+  const handleCategoryChange = (category: Category) => {
+    console.log("Category changed:", category);
+    // Will handle API call/filtering later
+  };
+
+  const handleThresholdChange = (threshold: string) => {
+    console.log("Threshold changed:", threshold);
+    // Will handle API call/filtering later
+  };
+
+  const sampleStats = [
+    {
+      id: "1",
+      playerName: "LeBron James",
+      teamAbbr: "LAL",
+      opponent: "@DEN",
+      statLine: "Points 25+",
+      hitRate: 85,
+      confidenceScore: 92,
+    },
+    {
+      id: "2",
+      playerName: "Stephen Curry",
+      teamAbbr: "GSW",
+      opponent: "PHX",
+      statLine: "Points 20+",
+      hitRate: 78,
+      confidenceScore: 82,
+    },
+    // Add more sample data as needed
+  ];
 
   return (
     <Box
@@ -91,7 +131,20 @@ export function Dashboard() {
       </AppBar>
 
       <Container maxWidth="xl" sx={{ mt: 4 }}>
-        {/* Stats overview cards will go here */}
+        <StatsOverview
+          totalStats={245} // These will be replaced with real data
+          totalGames={82} // This one will be fixed
+          highHitRates={45}
+          highConfidence={67}
+        />
+
+        <FilterBar
+          onTimeFrameChange={handleTimeFrameChange}
+          onCategoryChange={handleCategoryChange}
+          onThresholdChange={handleThresholdChange}
+        />
+
+        <StatRows stats={sampleStats} />
 
         {/* Player stat rows will go here */}
       </Container>

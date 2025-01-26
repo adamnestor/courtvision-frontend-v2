@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography, Box } from "@mui/material";
+import { Grid, Paper, Typography, Box, CircularProgress } from "@mui/material";
 import {
   Assessment,
   SportsBasketball,
@@ -8,7 +8,7 @@ import {
 
 interface StatsCardProps {
   title: string;
-  value: number;
+  value: number | React.ReactNode;
   icon: React.ReactNode;
 }
 
@@ -34,45 +34,47 @@ const StatsCard = ({ title, value, icon }: StatsCardProps) => (
 );
 
 interface StatsOverviewProps {
-  totalStats: number;
+  totalPlayers: number;
   totalGames: number;
   highHitRates: number;
   highConfidence: number;
+  loading?: boolean;
 }
 
 export function StatsOverview({
-  totalStats,
+  totalPlayers,
   totalGames,
   highHitRates,
   highConfidence,
+  loading = false,
 }: StatsOverviewProps) {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={6} md={3}>
         <StatsCard
-          title="Total Number of Stats"
-          value={totalStats}
+          title="Total Players"
+          value={loading ? <CircularProgress size={24} /> : totalPlayers}
           icon={<Assessment color="primary" sx={{ fontSize: 40 }} />}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={3}>
         <StatsCard
           title="Total Number of Games"
-          value={totalGames}
+          value={loading ? <CircularProgress size={24} /> : totalGames}
           icon={<SportsBasketball color="primary" sx={{ fontSize: 40 }} />}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={3}>
         <StatsCard
           title="Hit Rates Above 80%"
-          value={highHitRates}
+          value={loading ? <CircularProgress size={24} /> : highHitRates}
           icon={<TrendingUp color="primary" sx={{ fontSize: 40 }} />}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={3}>
         <StatsCard
           title="High Confidence Scores"
-          value={highConfidence}
+          value={loading ? <CircularProgress size={24} /> : highConfidence}
           icon={<Psychology color="primary" sx={{ fontSize: 40 }} />}
         />
       </Grid>

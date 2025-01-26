@@ -19,16 +19,16 @@ interface LoginData {
   password: string;
 }
 
-const API_URL = "http://localhost:8080/api";
-
 export class AuthService {
+  private static API_URL = "http://localhost:8080/api";
+
   static async register({
     confirmPassword,
     ...registerData
   }: RegisterData): Promise<AuthResponse> {
     console.log("Sending registration data:", registerData);
 
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${this.API_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export class AuthService {
   }
 
   static async login(data: LoginData): Promise<AuthResponse> {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${this.API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -76,6 +76,11 @@ export class AuthService {
     }
 
     const authData = await response.json();
+    console.log("Login response:", {
+      token: authData.token ? "Token exists" : "No token",
+      firstName: authData.firstName,
+    });
+
     localStorage.setItem("token", authData.token);
     localStorage.setItem(
       "userInfo",
@@ -86,6 +91,10 @@ export class AuthService {
         role: authData.role,
       })
     );
+
+    // Log what was stored
+    console.log("Stored token:", localStorage.getItem("token"));
+
     return authData;
   }
 
@@ -99,6 +108,16 @@ export class AuthService {
 
   static getAuthHeader() {
     const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    console.log(
+      "Creating auth header with token:",
+      token ? "Token exists" : "No token"
+    );
+
+    // Try without 'Bearer' prefix
+    return token ? { Authorization: token } : {};
+
+    // Or if that doesn't work, try these other common formats:
+    // return token ? { Authorization: `Token ${token}` } : {};
+    // return token ? { 'X-Auth-Token': token } : {};
   }
 }

@@ -1,37 +1,28 @@
 import { Box, ToggleButton, ToggleButtonGroup, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
+import { thresholdOptions } from "../../constants/thresholds";
 
 export type TimeFrame = "L5" | "L10" | "L15" | "L20" | "SEASON";
-export type Category = "ALL" | "POINTS" | "ASSISTS" | "REBOUNDS";
+export type Category = "POINTS" | "ASSISTS" | "REBOUNDS";
 
 interface FilterBarProps {
   onTimeFrameChange: (timeFrame: TimeFrame) => void;
   onCategoryChange: (category: Category) => void;
   onThresholdChange: (threshold: string) => void;
+  loading?: boolean;
 }
-
-const thresholdOptions = {
-  POINTS: ["10+", "15+", "20+", "25+"],
-  ASSISTS: ["2+", "4+", "6+", "8+"],
-  REBOUNDS: ["4+", "6+", "8+", "10+"],
-};
 
 export function FilterBar({
   onTimeFrameChange,
   onCategoryChange,
   onThresholdChange,
+  loading = false,
 }: FilterBarProps) {
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("L10");
-  const [category, setCategory] = useState<Category>("ALL");
-  const [threshold, setThreshold] = useState<string>("");
-
-  // Reset threshold when category changes
-  useEffect(() => {
-    if (category === "ALL") {
-      setThreshold("");
-      onThresholdChange("");
-    }
-  }, [category, onThresholdChange]);
+  const [category, setCategory] = useState<Category>("POINTS");
+  const [threshold, setThreshold] = useState<string>(
+    thresholdOptions.POINTS[0]
+  );
 
   const handleTimeFrameChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -50,9 +41,11 @@ export function FilterBar({
     if (newCategory !== null) {
       setCategory(newCategory);
       onCategoryChange(newCategory);
-      // Reset threshold when changing categories
-      setThreshold("");
-      onThresholdChange("");
+
+      // Just set the default threshold directly
+      const defaultThreshold = thresholdOptions[newCategory][0];
+      setThreshold(defaultThreshold);
+      onThresholdChange(defaultThreshold);
     }
   };
 
@@ -85,6 +78,7 @@ export function FilterBar({
           onChange={handleTimeFrameChange}
           aria-label="time frame"
           size="small"
+          disabled={loading}
         >
           {["L5", "L10", "L15", "L20", "SEASON"].map((option) => (
             <ToggleButton
@@ -104,8 +98,9 @@ export function FilterBar({
           onChange={handleCategoryChange}
           aria-label="category"
           size="small"
+          disabled={loading}
         >
-          {["ALL", "POINTS", "ASSISTS", "REBOUNDS"].map((option) => (
+          {["POINTS", "ASSISTS", "REBOUNDS"].map((option) => (
             <ToggleButton
               key={option}
               value={option}
@@ -117,25 +112,24 @@ export function FilterBar({
         </ToggleButtonGroup>
 
         {/* Threshold Filter */}
-        {category !== "ALL" && (
-          <ToggleButtonGroup
-            value={threshold}
-            exclusive
-            onChange={handleThresholdChange}
-            aria-label="threshold"
-            size="small"
-          >
-            {thresholdOptions[category]?.map((option) => (
-              <ToggleButton
-                key={option}
-                value={option}
-                sx={{ width: "70px" }} // Fixed width for threshold buttons
-              >
-                {option}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        )}
+        <ToggleButtonGroup
+          value={threshold}
+          exclusive
+          onChange={handleThresholdChange}
+          aria-label="threshold"
+          size="small"
+          disabled={loading}
+        >
+          {thresholdOptions[category]?.map((option) => (
+            <ToggleButton
+              key={option}
+              value={option}
+              sx={{ width: "70px" }} // Fixed width for threshold buttons
+            >
+              {option}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
       </Box>
     </Paper>
   );

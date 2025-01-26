@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 interface StatRow {
   id: string;
@@ -40,13 +41,71 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   "&:last-of-type": {
     paddingRight: theme.spacing(3),
   },
+  "&.sortable": {
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+  "&.header-cell": {
+    textAlign: "right",
+    paddingRight: theme.spacing(3),
+    minWidth: "180px",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    "& .sort-icon": {
+      marginLeft: theme.spacing(1),
+      verticalAlign: "middle",
+      display: "inline-block",
+    },
+    "&:hover": {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+  "&.value-cell": {
+    textAlign: "right",
+    paddingRight: theme.spacing(3),
+    minWidth: "180px",
+  },
+  "&.player-cell": {
+    minWidth: "200px",
+  },
+  "&.team-cell": {
+    minWidth: "80px",
+  },
+  "&.opponent-cell": {
+    minWidth: "100px",
+  },
+  "&.stat-cell": {
+    minWidth: "180px",
+    textAlign: "center",
+  },
 }));
 
 interface StatRowsProps {
   stats: StatRow[];
+  onSort: (field: "hitRate" | "confidenceScore") => void;
+  sortBy?: string;
+  sortDir?: "asc" | "desc";
+  loading?: boolean;
 }
 
-export function StatRows({ stats }: StatRowsProps) {
+export function StatRows({
+  stats,
+  onSort,
+  sortBy,
+  sortDir,
+  loading,
+}: StatRowsProps) {
+  const renderSortIcon = (field: string) => {
+    if (sortBy !== field) return null;
+    return sortDir === "asc" ? (
+      <ArrowUpward fontSize="small" />
+    ) : (
+      <ArrowDownward fontSize="small" />
+    );
+  };
+
   return (
     <TableContainer
       component={Paper}
@@ -60,26 +119,48 @@ export function StatRows({ stats }: StatRowsProps) {
       <Table>
         <TableHead>
           <TableRow>
-            <StyledTableCell>Player</StyledTableCell>
-            <StyledTableCell>Team</StyledTableCell>
-            <StyledTableCell>Opponent</StyledTableCell>
-            <StyledTableCell>Stat Line</StyledTableCell>
-            <StyledTableCell align="right">Hit Rate</StyledTableCell>
-            <StyledTableCell align="right">Confidence</StyledTableCell>
+            <StyledTableCell className="player-cell">Player</StyledTableCell>
+            <StyledTableCell className="team-cell">Team</StyledTableCell>
+            <StyledTableCell className="opponent-cell">
+              Opponent
+            </StyledTableCell>
+            <StyledTableCell className="stat-cell">Stat Line</StyledTableCell>
+            <StyledTableCell
+              className="header-cell"
+              onClick={() => !loading && onSort("hitRate")}
+            >
+              Hit Rate{" "}
+              <span className="sort-icon">{renderSortIcon("hitRate")}</span>
+            </StyledTableCell>
+            <StyledTableCell
+              className="header-cell"
+              onClick={() => !loading && onSort("confidenceScore")}
+            >
+              Confidence{" "}
+              <span className="sort-icon">
+                {renderSortIcon("confidenceScore")}
+              </span>
+            </StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {stats.map((row) => (
             <StyledTableRow key={row.id}>
-              <StyledTableCell>
+              <StyledTableCell className="player-cell">
                 <Typography variant="body1" fontWeight="medium">
                   {row.playerName}
                 </Typography>
               </StyledTableCell>
-              <StyledTableCell>{row.teamAbbr}</StyledTableCell>
-              <StyledTableCell>{row.opponent}</StyledTableCell>
-              <StyledTableCell>{row.statLine}</StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell className="team-cell">
+                {row.teamAbbr}
+              </StyledTableCell>
+              <StyledTableCell className="opponent-cell">
+                {row.opponent}
+              </StyledTableCell>
+              <StyledTableCell className="stat-cell">
+                {row.statLine}
+              </StyledTableCell>
+              <StyledTableCell className="value-cell">
                 <Typography
                   variant="body2"
                   color={row.hitRate >= 80 ? "success.main" : "text.primary"}
@@ -88,7 +169,7 @@ export function StatRows({ stats }: StatRowsProps) {
                   {row.hitRate}%
                 </Typography>
               </StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell className="value-cell">
                 <Typography
                   variant="body2"
                   color={

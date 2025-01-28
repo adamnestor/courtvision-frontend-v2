@@ -54,7 +54,7 @@ export function Dashboard() {
   );
   const [totalPages, setTotalPages] = useState(0);
   const [sortBy, setSortBy] = useState<string>("hitRate");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [allStats, setAllStats] = useState<DashboardStatRow[]>([]); // Store all stats
   const [displayedStats, setDisplayedStats] = useState<DashboardStatRow[]>([]); // Store paginated stats

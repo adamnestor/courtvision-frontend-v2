@@ -68,6 +68,9 @@ export class StatsService {
       });
 
       const url = `${this.API_URL}/dashboard/stats?${queryParams}`;
+      console.log("Dashboard request URL:", url);
+      console.log("Dashboard request params:", params);
+
       const headers = {
         ...AuthService.getAuthHeader(),
         "Content-Type": "application/json",

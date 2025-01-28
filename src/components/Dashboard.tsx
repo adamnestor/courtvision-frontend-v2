@@ -20,6 +20,7 @@ import { StatsOverview } from "./dashboard/StatsOverview";
 import { FilterBar, TimeFrame, Category } from "./dashboard/FilterBar";
 import { StatRows } from "./dashboard/StatRows";
 import { thresholdOptions } from "../constants/thresholds";
+import { Header } from "../components/common/Header";
 
 // Rename our local interface
 interface DashboardStatRow {
@@ -62,10 +63,8 @@ export function Dashboard() {
   const [totalPlayers, setTotalPlayers] = useState(0);
 
   const fetchDashboardStats = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
-
       const response = await StatsService.getDashboardStats({
         timeFrame,
         category,
@@ -183,6 +182,10 @@ export function Dashboard() {
     setCurrentPage(0); // Reset to first page when sorting changes
   };
 
+  const handleRowClick = (playerId: string) => {
+    navigate(`/player/${playerId}`);
+  };
+
   // Error alert component
   const ErrorAlert = ({ error }: { error: ApiError }) => (
     <Alert
@@ -217,48 +220,7 @@ export function Dashboard() {
         top: 0,
       }}
     >
-      <AppBar
-        position="static"
-        color="primary"
-        elevation={0}
-        sx={{
-          backgroundColor: "white",
-          borderBottom: "1px solid #e0e0e0",
-          width: "100%",
-        }}
-      >
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          {/* Logo space */}
-          <Box
-            sx={{
-              width: 150,
-              height: 40,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src="/placeholder-logo.png"
-              alt="CourtVision"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-              }}
-            />
-          </Box>
-
-          {/* Welcome message and logout */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Typography variant="h6" color="primary">
-              Welcome, {userInfo?.firstName || "User"}!
-            </Typography>
-            <Button variant="outlined" color="primary" onClick={handleLogout}>
-              Logout
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <Header userInfo={userInfo} showBackButton={false} />
 
       <Container maxWidth="xl" sx={{ mt: 4 }}>
         {error && <ErrorAlert error={error} />}
@@ -278,6 +240,9 @@ export function Dashboard() {
           onCategoryChange={handleCategoryChange}
           onThresholdChange={handleThresholdChange}
           loading={loading}
+          selectedTimeFrame={timeFrame}
+          selectedCategory={category}
+          selectedThreshold={threshold}
         />
 
         {loading ? (
@@ -292,6 +257,7 @@ export function Dashboard() {
               sortBy={sortBy}
               sortDir={sortDir}
               loading={loading}
+              onRowClick={handleRowClick}
             />
             <Box
               sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 4 }}

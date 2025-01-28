@@ -88,6 +88,7 @@ interface StatRowsProps {
   sortBy?: string;
   sortDir?: "asc" | "desc";
   loading?: boolean;
+  onRowClick?: (playerId: string) => void;
 }
 
 export function StatRows({
@@ -96,6 +97,7 @@ export function StatRows({
   sortBy,
   sortDir,
   loading,
+  onRowClick,
 }: StatRowsProps) {
   const renderSortIcon = (field: string) => {
     if (sortBy !== field) return null;
@@ -145,7 +147,10 @@ export function StatRows({
         </TableHead>
         <TableBody>
           {stats.map((row) => (
-            <StyledTableRow key={row.id}>
+            <StyledTableRow 
+              key={row.id}
+              onClick={() => onRowClick?.(row.id)}
+            >
               <StyledTableCell className="player-cell">
                 <Typography variant="body1" fontWeight="medium">
                   {row.playerName}

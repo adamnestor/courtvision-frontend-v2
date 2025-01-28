@@ -109,15 +109,9 @@ export class AuthService {
   static getAuthHeader() {
     const token = localStorage.getItem("token");
     console.log(
-      "Creating auth header with token:",
-      token ? "Token exists" : "No token"
+      "Getting auth header with token:",
+      token ? "exists" : "missing"
     );
-
-    // Try without 'Bearer' prefix
-    return token ? { Authorization: token } : {};
-
-    // Or if that doesn't work, try these other common formats:
-    // return token ? { Authorization: `Token ${token}` } : {};
-    // return token ? { 'X-Auth-Token': token } : {};
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 }

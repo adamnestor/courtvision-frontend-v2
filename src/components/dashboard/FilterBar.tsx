@@ -10,6 +10,9 @@ interface FilterBarProps {
   onCategoryChange: (category: Category) => void;
   onThresholdChange: (threshold: string) => void;
   loading?: boolean;
+  selectedTimeFrame: TimeFrame;
+  selectedCategory: Category;
+  selectedThreshold: string;
 }
 
 export function FilterBar({
@@ -17,19 +20,15 @@ export function FilterBar({
   onCategoryChange,
   onThresholdChange,
   loading = false,
+  selectedTimeFrame,
+  selectedCategory,
+  selectedThreshold,
 }: FilterBarProps) {
-  const [timeFrame, setTimeFrame] = useState<TimeFrame>("L10");
-  const [category, setCategory] = useState<Category>("POINTS");
-  const [threshold, setThreshold] = useState<string>(
-    thresholdOptions.POINTS[0]
-  );
-
   const handleTimeFrameChange = (
     _: React.MouseEvent<HTMLElement>,
     newTimeFrame: TimeFrame
   ) => {
     if (newTimeFrame !== null) {
-      setTimeFrame(newTimeFrame);
       onTimeFrameChange(newTimeFrame);
     }
   };
@@ -39,13 +38,7 @@ export function FilterBar({
     newCategory: Category
   ) => {
     if (newCategory !== null) {
-      setCategory(newCategory);
       onCategoryChange(newCategory);
-
-      // Just set the default threshold directly
-      const defaultThreshold = thresholdOptions[newCategory][0];
-      setThreshold(defaultThreshold);
-      onThresholdChange(defaultThreshold);
     }
   };
 
@@ -54,7 +47,6 @@ export function FilterBar({
     newThreshold: string
   ) => {
     if (newThreshold !== null) {
-      setThreshold(newThreshold);
       onThresholdChange(newThreshold);
     }
   };
@@ -73,7 +65,7 @@ export function FilterBar({
       <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
         {/* Time Frame Filter */}
         <ToggleButtonGroup
-          value={timeFrame}
+          value={selectedTimeFrame}
           exclusive
           onChange={handleTimeFrameChange}
           aria-label="time frame"
@@ -93,7 +85,7 @@ export function FilterBar({
 
         {/* Category Filter */}
         <ToggleButtonGroup
-          value={category}
+          value={selectedCategory}
           exclusive
           onChange={handleCategoryChange}
           aria-label="category"
@@ -113,14 +105,14 @@ export function FilterBar({
 
         {/* Threshold Filter */}
         <ToggleButtonGroup
-          value={threshold}
+          value={selectedThreshold}
           exclusive
           onChange={handleThresholdChange}
           aria-label="threshold"
           size="small"
           disabled={loading}
         >
-          {thresholdOptions[category]?.map((option) => (
+          {thresholdOptions[selectedCategory]?.map((option) => (
             <ToggleButton
               key={option}
               value={option}

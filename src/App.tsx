@@ -3,6 +3,7 @@ import { Login } from "./components/auth/Login";
 import { Register } from "./components/auth/Register";
 import { Dashboard } from "./components/Dashboard";
 import { AuthService } from "./services/auth.service";
+import { PlayerDetail } from "./components/player/PlayerDetail";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   return AuthService.isAuthenticated() ? (
@@ -25,6 +26,14 @@ function App() {
           element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/player/:playerId"
+          element={
+            <PrivateRoute>
+              <PlayerDetail />
             </PrivateRoute>
           }
         />

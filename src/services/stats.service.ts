@@ -32,6 +32,26 @@ interface DashboardQueryParams {
   sortDir?: "asc" | "desc";
 }
 
+interface RecentGame {
+  gameDate: string;
+  opponent: string;
+  isAway: boolean;
+  statValue: number;
+  hitThreshold: boolean;
+}
+
+export interface PlayerDetailData {
+  playerId: number;
+  playerName: string;
+  team: string;
+  hitRate: number;
+  confidenceScore: number;
+  gamesPlayed: number;
+  average: number;
+  isHighConfidence: boolean;
+  recentGames: RecentGame[];
+}
+
 export class StatsService {
   private static API_URL = "http://localhost:8080/api";
 
@@ -86,6 +106,71 @@ export class StatsService {
       return response.json();
     } catch (error) {
       console.error("Error in getDashboardStats:", error);
+      throw error;
+    }
+  }
+
+  static async getPlayerStats(
+    playerId: number,
+    params: {
+      timePeriod: string;
+      category: string;
+      threshold: string;
+    }
+  ): Promise<ApiResponse<PlayerDetailData>> {
+    try {
+      const queryParams = new URLSearchParams({
+        timePeriod: params.timePeriod,
+        category: params.category,
+        threshold: params.threshold.replace("+", ""),
+      });
+
+      const url = `${this.API_URL}/players/${playerId}/stats?${queryParams}`;
+      
+      const headers = AuthService.getAuthHeader();
+      
+      console.log("Making player stats request:", {
+        url,
+        headers,
+        hasToken: !!localStorage.getItem("token")
+      });
+
+      const response = await fetch(url, { 
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        console.log("Response not OK:", {
+          status: response.status,
+          statusText: response.statusText,
+        });
+
+        if (response.status === 401) {
+          const errorBody = await response.text();
+          console.log("401 Response body:", errorBody);
+          throw new Error("Your session has expired. Please log in again.");
+        }
+        if (response.status === 403) {
+          throw new Error("You don't have permission to access this data.");
+        }
+        if (response.status === 404) {
+          throw new Error("No data found for the selected filters.");
+        }
+        if (response.status >= 500) {
+          throw new Error("Server error. Please try again later.");
+        }
+
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch player stats");
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in getPlayerStats:", error);
       throw error;
     }
   }

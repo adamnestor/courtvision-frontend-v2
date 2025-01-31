@@ -211,18 +211,22 @@ export function Dashboard() {
   return (
     <Box
       sx={{
-        flexGrow: 1,
-        width: "100vw", // Full viewport width
-        margin: 0,
-        padding: 0,
-        position: "absolute",
-        left: 0,
-        top: 0,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        width: "100%",
+        backgroundColor: "background.default",
       }}
     >
       <Header userInfo={userInfo} showBackButton={false} />
 
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
+      <Container
+        maxWidth={false}
+        sx={{
+          mt: 4,
+          px: { xs: 2, md: 6 },
+        }}
+      >
         {error && <ErrorAlert error={error} />}
 
         <StatsOverview
@@ -233,6 +237,7 @@ export function Dashboard() {
             allStats.filter((stat) => stat.confidenceScore >= 80).length
           }
           loading={loading}
+          sx={{ mb: 4 }}
         />
 
         <FilterBar
@@ -268,6 +273,11 @@ export function Dashboard() {
                 onChange={handlePageChange}
                 color="primary"
                 disabled={loading}
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    fontSize: '1.12rem', // Match the table font size
+                  }
+                }}
               />
             </Box>
           </>

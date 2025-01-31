@@ -12,6 +12,54 @@ import {
 import { styled } from "@mui/material/styles";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  "& .MuiTable-root": {
+    borderCollapse: "separate",
+    borderSpacing: "0",
+  },
+}));
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  fontSize: "1.12rem",
+  fontWeight: 500,
+  color: theme.palette.text.primary,
+  "&.header-cell": {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+    cursor: "pointer",
+    transition: "background-color 0.2s",
+    "&:hover": {
+      backgroundColor: theme.palette.primary.dark,
+    },
+    "& .sort-icon": {
+      verticalAlign: "middle",
+      marginLeft: theme.spacing(0.5),
+      opacity: 0.8,
+      color: theme.palette.common.white,
+    },
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  transition: "all 0.2s",
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+    cursor: "pointer",
+    "& .MuiTableCell-root": {
+      color: theme.palette.text.primary,
+    },
+  },
+  "&:last-child td": {
+    borderBottom: 0,
+  },
+}));
+
 interface StatRow {
   id: string;
   playerName: string;
@@ -21,66 +69,6 @@ interface StatRow {
   hitRate: number;
   confidenceScore: number;
 }
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-    boxShadow: "0 4px 20px 0 rgba(0,0,0,0.12)",
-    cursor: "pointer",
-    transform: "translateY(-1px)",
-    transition: "all 0.2s ease-in-out",
-  },
-}));
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  "&:first-of-type": {
-    paddingLeft: theme.spacing(3),
-  },
-  "&:last-of-type": {
-    paddingRight: theme.spacing(3),
-  },
-  "&.sortable": {
-    cursor: "pointer",
-    "&:hover": {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-  "&.header-cell": {
-    textAlign: "right",
-    paddingRight: theme.spacing(3),
-    minWidth: "180px",
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    "& .sort-icon": {
-      marginLeft: theme.spacing(1),
-      verticalAlign: "middle",
-      display: "inline-block",
-    },
-    "&:hover": {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-  "&.value-cell": {
-    textAlign: "right",
-    paddingRight: theme.spacing(3),
-    minWidth: "180px",
-  },
-  "&.player-cell": {
-    minWidth: "200px",
-  },
-  "&.team-cell": {
-    minWidth: "80px",
-  },
-  "&.opponent-cell": {
-    minWidth: "100px",
-  },
-  "&.stat-cell": {
-    minWidth: "180px",
-    textAlign: "center",
-  },
-}));
 
 interface StatRowsProps {
   stats: StatRow[];
@@ -99,88 +87,80 @@ export function StatRows({
   loading,
   onRowClick,
 }: StatRowsProps) {
-  const renderSortIcon = (field: string) => {
+  const getSortIcon = (field: string) => {
     if (sortBy !== field) return null;
     return sortDir === "asc" ? (
-      <ArrowUpward fontSize="small" />
+      <ArrowUpward className="sort-icon" fontSize="small" />
     ) : (
-      <ArrowDownward fontSize="small" />
+      <ArrowDownward className="sort-icon" fontSize="small" />
     );
   };
 
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "success.main";
+    if (score >= 60) return "warning.main";
+    return "error.main";
+  };
+
   return (
-    <TableContainer
-      component={Paper}
-      elevation={0}
-      sx={{
-        borderRadius: 2,
-        border: "1px solid",
-        borderColor: "divider",
-      }}
-    >
+    <StyledTableContainer component={Paper} elevation={0}>
       <Table>
         <TableHead>
           <TableRow>
-            <StyledTableCell className="player-cell">Player</StyledTableCell>
-            <StyledTableCell className="team-cell">Team</StyledTableCell>
-            <StyledTableCell className="opponent-cell">
-              Opponent
-            </StyledTableCell>
-            <StyledTableCell className="stat-cell">Stat Line</StyledTableCell>
-            <StyledTableCell
-              className="header-cell"
+            <StyledTableCell className="header-cell">Player</StyledTableCell>
+            <StyledTableCell className="header-cell">Team</StyledTableCell>
+            <StyledTableCell className="header-cell">Opponent</StyledTableCell>
+            <StyledTableCell className="header-cell">Stat Line</StyledTableCell>
+            <StyledTableCell 
+              className="header-cell" 
               onClick={() => !loading && onSort("hitRate")}
+              align="right"
             >
-              Hit Rate{" "}
-              <span className="sort-icon">{renderSortIcon("hitRate")}</span>
+              Hit Rate {getSortIcon("hitRate")}
             </StyledTableCell>
-            <StyledTableCell
-              className="header-cell"
+            <StyledTableCell 
+              className="header-cell" 
               onClick={() => !loading && onSort("confidenceScore")}
+              align="right"
             >
-              Confidence{" "}
-              <span className="sort-icon">
-                {renderSortIcon("confidenceScore")}
-              </span>
+              Confidence {getSortIcon("confidenceScore")}
             </StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {stats.map((row) => (
             <StyledTableRow 
-              key={row.id}
+              key={row.id} 
               onClick={() => onRowClick?.(row.id)}
             >
-              <StyledTableCell className="player-cell">
-                <Typography variant="body1" fontWeight="medium">
+              <StyledTableCell>
+                <Typography 
+                  variant="body1" 
+                  fontWeight={500}
+                  fontSize="1.12rem"
+                >
                   {row.playerName}
                 </Typography>
               </StyledTableCell>
-              <StyledTableCell className="team-cell">
-                {row.teamAbbr}
-              </StyledTableCell>
-              <StyledTableCell className="opponent-cell">
-                {row.opponent}
-              </StyledTableCell>
-              <StyledTableCell className="stat-cell">
-                {row.statLine}
-              </StyledTableCell>
-              <StyledTableCell className="value-cell">
-                <Typography
-                  variant="body2"
-                  color={row.hitRate >= 80 ? "success.main" : "text.primary"}
-                  fontWeight="medium"
+              <StyledTableCell>{row.teamAbbr}</StyledTableCell>
+              <StyledTableCell>{row.opponent}</StyledTableCell>
+              <StyledTableCell>{row.statLine}</StyledTableCell>
+              <StyledTableCell align="right">
+                <Typography 
+                  variant="body2" 
+                  fontWeight={500}
+                  fontSize="1.12rem"
+                  color={getScoreColor(row.hitRate)}
                 >
                   {row.hitRate}%
                 </Typography>
               </StyledTableCell>
-              <StyledTableCell className="value-cell">
-                <Typography
-                  variant="body2"
-                  color={
-                    row.confidenceScore >= 80 ? "success.main" : "text.primary"
-                  }
-                  fontWeight="medium"
+              <StyledTableCell align="right">
+                <Typography 
+                  variant="body2" 
+                  fontWeight={600}
+                  fontSize="1.12rem"
+                  color={getScoreColor(row.confidenceScore)}
                 >
                   {row.confidenceScore}%
                 </Typography>
@@ -189,6 +169,6 @@ export function StatRows({
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </StyledTableContainer>
   );
 }

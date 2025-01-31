@@ -1,17 +1,67 @@
 import { Box, ToggleButton, ToggleButtonGroup, Paper } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { useState, useEffect } from "react";
 import { thresholdOptions } from "../../constants/thresholds";
+
+const FilterContainer = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+}));
+
+const FilterGroupsWrapper = styled(Box)(({ theme }) => ({
+  display: "flex",
+  gap: theme.spacing(2),
+  alignItems: "center",
+  flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+  },
+}));
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.primary.main}`,
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(1),
+  "& .MuiToggleButton-root": {
+    border: "none",
+    borderRadius: theme.shape.borderRadius,
+    margin: "0 2px",
+    padding: "6px 16px",
+    color: theme.palette.text.primary,
+    textTransform: "none",
+    fontWeight: 600,
+    fontSize: "1.12rem",
+    backgroundColor: "transparent",
+    
+    "&:hover": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    
+    "&.Mui-selected": {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+      "&:hover": {
+        backgroundColor: theme.palette.primary.dark,
+      },
+    },
+  },
+}));
 
 export type TimeFrame = "L5" | "L10" | "L15" | "L20" | "SEASON";
 export type Category = "POINTS" | "ASSISTS" | "REBOUNDS";
 
 interface FilterBarProps {
-  onTimeFrameChange: (timeFrame: TimeFrame) => void;
-  onCategoryChange: (category: Category) => void;
-  onThresholdChange: (threshold: string) => void;
+  onTimeFrameChange: (value: string) => void;
+  onCategoryChange: (value: string) => void;
+  onThresholdChange: (value: string) => void;
   loading?: boolean;
-  selectedTimeFrame: TimeFrame;
-  selectedCategory: Category;
+  selectedTimeFrame: string;
+  selectedCategory: string;
   selectedThreshold: string;
 }
 
@@ -24,105 +74,67 @@ export function FilterBar({
   selectedCategory,
   selectedThreshold,
 }: FilterBarProps) {
-  const handleTimeFrameChange = (
-    _: React.MouseEvent<HTMLElement>,
-    newTimeFrame: TimeFrame
-  ) => {
-    if (newTimeFrame !== null) {
-      onTimeFrameChange(newTimeFrame);
+  const handleTimeFrameChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
+    if (value !== null) {
+      onTimeFrameChange(value);
     }
   };
 
-  const handleCategoryChange = (
-    _: React.MouseEvent<HTMLElement>,
-    newCategory: Category
-  ) => {
-    if (newCategory !== null) {
-      onCategoryChange(newCategory);
+  const handleCategoryChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
+    if (value !== null) {
+      onCategoryChange(value);
     }
   };
 
-  const handleThresholdChange = (
-    _: React.MouseEvent<HTMLElement>,
-    newThreshold: string
-  ) => {
-    if (newThreshold !== null) {
-      onThresholdChange(newThreshold);
+  const handleThresholdChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
+    if (value !== null) {
+      onThresholdChange(value);
     }
   };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 2,
-        mb: 3,
-        border: "1px solid",
-        borderColor: "divider",
-        borderRadius: 2,
-      }}
-    >
-      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-        {/* Time Frame Filter */}
-        <ToggleButtonGroup
+    <FilterContainer elevation={0}>
+      <FilterGroupsWrapper>
+        <StyledToggleButtonGroup
           value={selectedTimeFrame}
           exclusive
           onChange={handleTimeFrameChange}
           aria-label="time frame"
-          size="small"
           disabled={loading}
         >
-          {["L5", "L10", "L15", "L20", "SEASON"].map((option) => (
-            <ToggleButton
-              key={option}
-              value={option}
-              sx={{ width: "80px" }} // Fixed width for time frame buttons
-            >
-              {option}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+          <ToggleButton value="L5">Last 5</ToggleButton>
+          <ToggleButton value="L10">Last 10</ToggleButton>
+          <ToggleButton value="L15">Last 15</ToggleButton>
+          <ToggleButton value="L20">Last 20</ToggleButton>
+          <ToggleButton value="SEASON">Season</ToggleButton>
+        </StyledToggleButtonGroup>
 
-        {/* Category Filter */}
-        <ToggleButtonGroup
+        <StyledToggleButtonGroup
           value={selectedCategory}
           exclusive
           onChange={handleCategoryChange}
           aria-label="category"
-          size="small"
           disabled={loading}
         >
-          {["POINTS", "ASSISTS", "REBOUNDS"].map((option) => (
-            <ToggleButton
-              key={option}
-              value={option}
-              sx={{ width: "100px" }} // Fixed width for category buttons
-            >
-              {option}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+          <ToggleButton value="POINTS">Points</ToggleButton>
+          <ToggleButton value="ASSISTS">Assists</ToggleButton>
+          <ToggleButton value="REBOUNDS">Rebounds</ToggleButton>
+        </StyledToggleButtonGroup>
 
-        {/* Threshold Filter */}
-        <ToggleButtonGroup
+        <StyledToggleButtonGroup
           value={selectedThreshold}
           exclusive
           onChange={handleThresholdChange}
           aria-label="threshold"
-          size="small"
           disabled={loading}
         >
           {thresholdOptions[selectedCategory]?.map((option) => (
-            <ToggleButton
-              key={option}
-              value={option}
-              sx={{ width: "70px" }} // Fixed width for threshold buttons
-            >
+            <ToggleButton key={option} value={option}>
               {option}
             </ToggleButton>
           ))}
-        </ToggleButtonGroup>
-      </Box>
-    </Paper>
+        </StyledToggleButtonGroup>
+      </FilterGroupsWrapper>
+    </FilterContainer>
   );
 }

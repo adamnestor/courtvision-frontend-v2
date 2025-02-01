@@ -81,7 +81,8 @@ export function Login() {
     try {
       await AuthService.login(formData);
       navigate("/dashboard");
-    } catch (err) {
+    } catch (error) {
+      console.error("Login error:", error);
       setError("Invalid credentials");
     }
   };

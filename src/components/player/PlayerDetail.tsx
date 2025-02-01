@@ -24,14 +24,8 @@ import { FilterBar, TimeFrame, Category } from "../dashboard/FilterBar";
 import { thresholdOptions } from "../../constants/thresholds";
 import { PlayerDetailData } from "../../services/stats.service";
 import { Header } from "../common/Header";
-import {
-  Assessment,
-  Groups,
-  Psychology,
-  SportsBasketball,
-} from "@mui/icons-material";
+import { Assessment, Psychology, SportsBasketball } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import { Theme } from "@mui/material/styles";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -49,27 +43,27 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const IconWrapper = styled(Box)(
-  ({ theme, color }: { theme: Theme; color: string }) => ({
-    width: 56,
-    height: 56,
-    borderRadius: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: color,
-    flexShrink: 0,
-    "& svg": {
-      fontSize: 28,
-      color:
-        color === "#EDE7F6"
-          ? "#5E35B1"
-          : color === "#A0D2FA"
-          ? "#1D87E4"
-          : theme.palette.common.white,
-    },
-  })
-);
+const IconWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "color",
+})<{ color: string }>(({ theme, color }) => ({
+  width: 56,
+  height: 56,
+  borderRadius: "12px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: color,
+  flexShrink: 0,
+  "& svg": {
+    fontSize: 28,
+    color:
+      color === "#EDE7F6"
+        ? "#5E35B1"
+        : color === "#A0D2FA"
+        ? "#1D87E4"
+        : theme.palette.common.white,
+  },
+}));
 
 const TextContent = styled(Box)({
   display: "flex",
@@ -323,8 +317,10 @@ export function PlayerDetail() {
         </Grid>
 
         <FilterBar
-          onTimeFrameChange={handleTimeFrameChange}
-          onCategoryChange={handleCategoryChange}
+          onTimeFrameChange={(value) =>
+            handleTimeFrameChange(value as TimeFrame)
+          }
+          onCategoryChange={(value) => handleCategoryChange(value as Category)}
           onThresholdChange={handleThresholdChange}
           loading={loading}
           selectedTimeFrame={timeFrame}

@@ -1,13 +1,10 @@
 import {
   Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
   Container,
   CircularProgress,
   Pagination,
   Alert,
+  Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../services/auth.service";
@@ -145,11 +142,6 @@ export function Dashboard() {
     }
   }, []);
 
-  const handleLogout = () => {
-    AuthService.logout();
-    navigate("/login");
-  };
-
   const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
     setTimeFrame(newTimeFrame);
     setCurrentPage(0); // Reset to first page when filter changes
@@ -241,8 +233,10 @@ export function Dashboard() {
         />
 
         <FilterBar
-          onTimeFrameChange={handleTimeFrameChange}
-          onCategoryChange={handleCategoryChange}
+          onTimeFrameChange={(value) =>
+            handleTimeFrameChange(value as TimeFrame)
+          }
+          onCategoryChange={(value) => handleCategoryChange(value as Category)}
           onThresholdChange={handleThresholdChange}
           loading={loading}
           selectedTimeFrame={timeFrame}
@@ -274,9 +268,9 @@ export function Dashboard() {
                 color="primary"
                 disabled={loading}
                 sx={{
-                  '& .MuiPaginationItem-root': {
-                    fontSize: '1.12rem', // Match the table font size
-                  }
+                  "& .MuiPaginationItem-root": {
+                    fontSize: "1.12rem", // Match the table font size
+                  },
                 }}
               />
             </Box>

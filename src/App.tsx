@@ -1,43 +1,54 @@
-import { useState } from "react";
-import {
-  Button,
-  Container,
-  Typography,
-  Box,
-  AppBar,
-  Toolbar,
-} from "@mui/material";
-import "./App.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Login } from "./components/auth/Login";
+import { Register } from "./components/auth/Register";
+import { Dashboard } from "./components/Dashboard";
+import { AuthService } from "./services/auth.service";
+import { PlayerDetail } from "./components/player/PlayerDetail";
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  return AuthService.isAuthenticated() ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" />
+  );
+}
 
 function App() {
-  const [count, setCount] = useState(0);
+  const isAuthenticated = AuthService.isAuthenticated();
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">My MUI App</Typography>
-        </Toolbar>
-      </AppBar>
-      <Container>
-        <Box sx={{ mt: 4, textAlign: "center" }}>
-          <Typography variant="h4" gutterBottom>
-            Vite + React + MUI
-          </Typography>
-          <Box sx={{ my: 4 }}>
-            <Button
-              variant="contained"
-              onClick={() => setCount((count) => count + 1)}
-            >
-              Count is {count}
-            </Button>
-            <Typography sx={{ mt: 2 }}>
-              Edit <code>src/App.tsx</code> and save to test HMR
-            </Typography>
-          </Box>
-        </Box>
-      </Container>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/player/:playerId"
+          element={
+            <PrivateRoute>
+              <PlayerDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -361,11 +361,13 @@ export function PlayerDetail() {
                   height={70}
                   tick={({ x, y, payload, index }) => {
                     const game = playerData.recentGames[index];
-                    const formattedDate = new Date(
-                      payload.value
-                    ).toLocaleDateString("en-US", {
+                    const date = new Date(payload.value);
+                    date.setDate(date.getDate() + 1);
+
+                    const formattedDate = date.toLocaleDateString("en-US", {
                       month: "numeric",
                       day: "numeric",
+                      timeZone: "America/New_York",
                     });
                     return (
                       <g transform={`translate(${x},${y})`}>
@@ -398,7 +400,11 @@ export function PlayerDetail() {
                     `${value} ${category}`,
                     "Value",
                   ]}
-                  labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                  labelFormatter={(date) => {
+                    const adjustedDate = new Date(date);
+                    adjustedDate.setDate(adjustedDate.getDate() + 1);
+                    return adjustedDate.toLocaleDateString();
+                  }}
                   contentStyle={{
                     backgroundColor: "rgba(255, 255, 255, 0.95)",
                     border: "1px solid #e0e0e0",

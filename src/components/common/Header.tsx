@@ -1,7 +1,16 @@
-import { AppBar, Toolbar, Box, Typography, Button, IconButton, Container } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Typography,
+  Button,
+  IconButton,
+  Container,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../../services/auth.service";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import logo from "../../assets/CourtVision.png";
 
 interface HeaderProps {
   userInfo: { firstName: string } | null;
@@ -25,20 +34,18 @@ export function Header({ userInfo, showBackButton }: HeaderProps) {
         width: "100%",
       }}
     >
-      <Container
-        maxWidth={false}
-      >
-        <Toolbar 
-          sx={{ 
+      <Container maxWidth={false}>
+        <Toolbar
+          sx={{
             justifyContent: "space-between",
             px: { xs: 2, md: 6 }, // More padding on larger screens
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {showBackButton && (
-              <IconButton 
-                onClick={() => navigate('/dashboard')}
-                sx={{ color: 'common.white' }} // White back button
+              <IconButton
+                onClick={() => navigate("/dashboard")}
+                sx={{ color: "common.white" }} // White back button
               >
                 <ArrowBackIcon />
               </IconButton>
@@ -53,7 +60,7 @@ export function Header({ userInfo, showBackButton }: HeaderProps) {
               }}
             >
               <img
-                src="/placeholder-logo.png"
+                src={logo}
                 alt="CourtVision"
                 style={{
                   maxWidth: "100%",
@@ -67,16 +74,16 @@ export function Header({ userInfo, showBackButton }: HeaderProps) {
             <Typography variant="h6" color="common.white">
               Welcome, {userInfo?.firstName || "User"}!
             </Typography>
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
               onClick={handleLogout}
               sx={{
-                color: 'common.white',
-                borderColor: 'common.white',
-                '&:hover': {
-                  borderColor: 'common.white',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                }
+                color: "common.white",
+                borderColor: "common.white",
+                "&:hover": {
+                  borderColor: "common.white",
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                },
               }}
             >
               Logout
@@ -86,4 +93,4 @@ export function Header({ userInfo, showBackButton }: HeaderProps) {
       </Container>
     </AppBar>
   );
-} 
+}
